@@ -49,8 +49,14 @@ const PizzaSchema = new Schema({
   // Virtuals allow us to add more information to a database response so that we don't have to add in the information manually with a helper before responding to the API request.
   
   // Get total count of comments and replies on retrieval:
+// PizzaSchema.virtual('commentCount').get(function() {
+//     return this.comments.length;
+//   });
+
+// let's update the pizza's virtual commentCount so that it includes all replies as well:
 PizzaSchema.virtual('commentCount').get(function() {
-    return this.comments.length;
+    // Like .map(), the array prototype method .reduce() executes a function on each element in an array. However, unlike .map(), it uses the result of each function execution for each successive computation as it goes through the array. This makes it a perfect candidate for getting a sum of multiple values.
+    return this.comments.reduce((total, comment) => total + comment.replies.length + 1, 0);
   });
 
   // create the Pizza model using the PizzaSchema
@@ -58,3 +64,35 @@ const Pizza = model('Pizza', PizzaSchema);
 
 // export the Pizza model
 module.exports = Pizza;
+
+// The .reduce() method can do more than just tally up sums, though. What if you needed to get the average years of experience of a team of software developers? Sure, you could write a for loop with some logic. Or, instead, you could write a clean map and reduce function.
+
+// Review the following code:
+
+// const developers = [
+//   {
+//     name: "Eliza",
+//     experience: 7,
+//     role: "manager"
+//   },
+//   {
+//     name: "Manuel",
+//     experience: 2,
+//     role: "developer"
+//   },
+//   {
+//     name: "Kim",
+//     experience: 5,
+//     role: "developer"
+//   }
+// ];
+
+// function calculateAverage(total, years, index, array) {
+//   total += years;
+//   return index === array.length-1 ? total/array.length: total
+// }
+
+// const average = developers.map(dev => dev.experience).reduce(calculateAverage);
+// In this case, map grabs just the years of experience from each developer. Then .reduce() is used to continually add on to a value within the scope of the method known as the accumulator, then divide by the length of the entire array. The built-in .reduce() method is great for calculating a value based off of the accumulation of values in an array.
+
+// You may not use .reduce() that often, but when you do, you'll find it can provide very elegant and clean solutions.

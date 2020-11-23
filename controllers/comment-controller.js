@@ -24,7 +24,33 @@ const commentController = {
           .catch(err => res.json(err));
       },
 
-     
+      addReply({ params, body }, res) {
+        Comment.findOneAndUpdate(
+          { _id: params.commentId },
+          { $push: { replies: body } },
+          { new: true }
+        )
+          .then(dbPizzaData => {
+            if (!dbPizzaData) {
+              res.status(404).json({ message: 'No pizza found with this id!' });
+              return;
+            }
+            res.json(dbPizzaData);
+          })
+          .catch(err => res.json(err));
+      },
+
+      // remove reply
+      removeReply({ params }, res) {
+        Comment.findOneAndUpdate(
+          { _id: params.commentId },
+          { $pull: { replies: { replyId: params.replyId } } },
+          { new: true }
+        )
+          .then(dbPizzaData => res.json(dbPizzaData))
+          .catch(err => res.json(err));
+      },
+      
 // Now, for the removeComment() method, remember that not only do we need to delete the comment, but we also need to remove it from the pizza it’s associated with. First we'll delete the comment, then we'll use its _id to remove it from the pizza.
 
   // remove comment
