@@ -5,11 +5,17 @@ const { Schema, model } = require('mongoose');
 // So for the most part, this feels a lot like Sequelize. We essentially create a schema, using the Schema constructor we imported from Mongoose, and define the fields with specific data types. We don't have to define the fields, as MongoDB will allow the data anyway, but for for clarity and usability, we should regulate what the data will look like.
 const PizzaSchema = new Schema({
     pizzaName: {
-      type: String
-    },
-    createdBy: {
-      type: String
-    },
+        type: String,
+        required: 'You need to provide a pizza name!',
+        trim: true
+        // Notice the trim option that's been added, which works just like the JavaScript .trim() method and removes white space before and after the input string. You'll find that useful when working with username and password data.
+      },
+      createdBy: {
+        type: String,
+        required: true,
+        trim: true
+      },
+      
     createdAt: {
       type: Date,
       default: Date.now,
@@ -17,9 +23,12 @@ const PizzaSchema = new Schema({
       // To use a getter in Mongoose, we just need to add the key get to the field we are looking to use it with in the schema. Just like a virtual, the getter will transform the data before it gets to the controller(s).
     },
     size: {
-      type: String,
-      default: 'Large'
-    },
+        type: String,
+        required: true,
+        // If you were to provide a custom error message for the required option here, you wouldn't receive it if you provide a size that isn't listed in the enum option. If you want to provide a custom message for enumerable values, you need to look into implementing the validate option Mongoose lets you use, where you can create a custom function to test the values, just like you did with Inquirer!
+        enum: ['Personal', 'Small', 'Medium', 'Large', 'Extra Large'],
+        default: 'Large'
+      },
     //Notice the empty brackets [] in the toppings field. This indicates an array as the data type. You could also specify Array in place of the brackets.
     toppings: [],
     comments: [

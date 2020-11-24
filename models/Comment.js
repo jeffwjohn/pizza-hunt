@@ -4,16 +4,20 @@ const dateFormat = require('../utils/dateFormat');
 // Now we'll work on integrating replies with comments. Just like comments, we could use another model for replies, but it’s not really necessary since we'll never query for just reply data. Instead, let's take advantage of some of the flexibility that MongoDB provides and create replies as a subdocument array for comments. To normalize it, we'll create a schema for it.
 const ReplySchema = new Schema(
     {
-        // set custom id to avoid confusion with parent comment _id
-    replyId: {
+      // set custom id to avoid confusion with parent comment _id
+      replyId: {
         type: Schema.Types.ObjectId,
         default: () => new Types.ObjectId()
       },
       replyBody: {
-        type: String
+        type: String,
+        required: true,
+        trim: true
       },
       writtenBy: {
-        type: String
+        type: String,
+        required: true,
+        trim: true
       },
       createdAt: {
         type: Date,
@@ -22,19 +26,23 @@ const ReplySchema = new Schema(
       }
     },
     {
-        toJSON: {
-          getters: true
-        }
+      toJSON: {
+        getters: true
+      }
     }
   );
 
   
 const CommentSchema = new Schema({
   writtenBy: {
-    type: String
+    type: String,
+    required: 'You must include a name to comment!',
+    trim: true
   },
   commentBody: {
-    type: String
+    type: String,
+    required: "You must write something in order to comment!",
+    trim: true
   },
   createdAt: {
     type: Date,
